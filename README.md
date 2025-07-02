@@ -8,7 +8,7 @@ A beautiful, fast, and customizable Spotlight-like search component for React ap
 
 ## 🎬 Demo
 
-![Spotlight Search Demo](./demo.gif)
+![Spotlight Search Demo](https://github.com/sehaj23/react-spotlight/blob/main/demo.gif)
 
 ## ✨ Features
 
