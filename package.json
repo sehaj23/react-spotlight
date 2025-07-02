@@ -21,8 +21,16 @@
     "autocomplete",
     "react"
   ],
-  "author": "",
+  "author": "Your Name <your.email@example.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/spotlight-search.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/spotlight-search/issues"
+  },
+  "homepage": "https://github.com/yourusername/spotlight-search#readme",
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0",
