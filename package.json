@@ -1,6 +1,6 @@
 {
   "name": "@sehaj23/react-spotlight-search",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A React component that provides Spotlight-like search functionality for modules and links",
   "type": "module",
   "main": "dist/index.js",
