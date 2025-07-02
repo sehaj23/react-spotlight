@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Spotlight Search Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/@mui/material@5/umd/material-ui.development.js"></script>
+    <link rel="stylesheet" href="./src/style.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 40px;
+        }
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .demo-button {
+            background: #0A84FF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px;
+            transition: background 0.2s ease;
+        }
+        .demo-button:hover {
+            background: #0066CC;
+        }
+        
+        input[type="checkbox"] {
+            accent-color: #0A84FF;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        // Mock Spotlight component for demo using MUI
+        const { useState, useEffect, useMemo, useCallback, useRef } = React;
+        const { Box, InputBase, Typography, Chip, Fade, Paper } = MaterialUI;
+        
+        // Sample data with custom onClick handlers
+        const sampleItems = [
+            {
+                id: '1',
+                name: 'Dashboard',
+                url: '/dashboard',
+                tags: ['home', 'main', 'overview', 'stats'],
+                onClick: (item) => {
+                    alert(`Custom action for ${item.name}: Opening analytics overview!`);
+                }
+            },
+            {
+                id: '2',
+                name: 'User Settings',  
+                url: '/settings',
+                tags: ['profile', 'preferences', 'config', 'account'],
+                onClick: (item) => {
+                    alert(`Custom action for ${item.name}: Opening user preferences panel!`);
+                }
+            },
+            {
+                id: '3',
+                name: 'Analytics',
+                url: '/analytics', 
+                tags: ['stats', 'metrics', 'data', 'reports']
+                // No custom onClick - will use global onSelect
+            },
+            {
+                id: '4',
+                name: 'Team Management',
+                url: '/team',
+                tags: ['users', 'members', 'people', 'staff'],
+                onClick: (item) => {
+                    console.log(`Opening team management for: ${item.name}`);
+                    alert(`Custom action for ${item.name}: Fetching team data...`);
+                }
+            },
+            {
+                id: '5',
+                name: 'Projects',
+                url: '/projects',
+                tags: ['work', 'tasks', 'todo', 'assignments']
+                // No custom onClick - will use global onSelect
+            },
+            {
+                id: '6',
+                name: 'Messages',
+                url: '/messages',
+                tags: ['chat', 'communication', 'inbox', 'notifications'],
+                onClick: (item) => {
+                    alert(`Custom action for ${item.name}: Opening chat interface with notifications!`);
+                }
+            },
+            {
+                id: '7',
+                name: 'Calendar',
+                url: '/calendar',
+                tags: ['schedule', 'events', 'meetings', 'appointments'],
+                onClick: (item) => {
+                    const today = new Date().toLocaleDateString();
+                    alert(`Custom action for ${item.name}: Opening calendar for ${today}`);
+                }
+            },
+            {
+                id: '8',
+                name: 'File Manager',
+                url: '/files',
+                tags: ['documents', 'storage', 'uploads', 'media']
+                // No custom onClick - will use global onSelect
+            }
+        ];
+
+        // Smart icon selector based on item name/tags
+        const getSmartIcon = (item) => {
+            const name = item.name.toLowerCase();
+            const tags = item.tags.join(' ').toLowerCase();
+            
+            if (name.includes('dashboard') || tags.includes('dashboard')) return '📊';
+            if (name.includes('settings') || tags.includes('settings')) return '⚙️';
+            if (name.includes('analytics') || tags.includes('analytics')) return '📈';
+            if (name.includes('team') || name.includes('user') || tags.includes('team')) return '👥';
+            if (name.includes('project') || tags.includes('project')) return '📋';
+            if (name.includes('message') || tags.includes('message')) return '💬';
+            if (name.includes('calendar') || tags.includes('calendar')) return '📅';
+            if (name.includes('file') || tags.includes('file')) return '📁';
+            return '📄';
+        };
+
+        // Simple search hook
+        const useSearch = (items, query) => {
+            return useMemo(() => {
+                if (!query.trim()) return items.slice(0, 6);
+                
+                const searchTerm = query.toLowerCase();
+                return items.filter(item => 
+                    item.name.toLowerCase().includes(searchTerm) ||
+                    item.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+                ).slice(0, 8);
+            }, [items, query]);
+        };
+
+        // Simple Spotlight Component for Demo
+        const SpotlightDemo = ({ items, isOpen, onClose, onSelect, showInitialResults = true, theme = 'auto' }) => {
+            const [query, setQuery] = useState('');
+            const [selectedIndex, setSelectedIndex] = useState(0);
+            const inputRef = useRef(null);
+            
+            const searchResults = useSearch(items, query);
+            const filteredItems = (!query.trim() && !showInitialResults) ? [] : searchResults;
+            
+            useEffect(() => {
+                if (isOpen && inputRef.current) {
+                    inputRef.current.focus();
+                }
+            }, [isOpen]);
+            
+            useEffect(() => {
+                setSelectedIndex(0);
+            }, [filteredItems]);
+            
+            const handleKeyDown = (e) => {
+                switch (e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        setSelectedIndex(prev => 
+                            prev < filteredItems.length - 1 ? prev + 1 : prev
+                        );
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        setSelectedIndex(prev => prev > 0 ? prev - 1 : prev);
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        if (filteredItems[selectedIndex]) {
+                            onSelect(filteredItems[selectedIndex]);
+                        }
+                        break;
+                    case 'Escape':
+                        e.preventDefault();
+                        onClose();
+                        break;
+                }
+            };
+
+            if (!isOpen) return null;
+
+            return (
+                <Fade in={isOpen}>
+                    <Box 
+                        className="spotlight-overlay"
+                        onClick={onClose}
+                        data-theme={theme}
+                    >
+                        <Paper 
+                            className="spotlight-container" 
+                            elevation={0}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <Box className="spotlight-search">
+                                <Box className="spotlight-search-icon">
+                                    🔍
+                                </Box>
+                                <InputBase
+                                    ref={inputRef}
+                                    value={query}
+                                    onChange={e => setQuery(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    placeholder="Search modules..."
+                                    className="spotlight-input"
+                                    fullWidth
+                                    sx={{
+                                        fontSize: 20,
+                                        fontWeight: 400,
+                                        '& .MuiInputBase-input': {
+                                            padding: 0,
+                                            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif'
+                                        }
+                                    }}
+                                />
+                            </Box>
+
+                            {filteredItems.length > 0 && (
+                                <Box className="spotlight-results">
+                                    {!query.trim() && showInitialResults && (
+                                        <Typography className="spotlight-section-header">
+                                            Recently Used
+                                        </Typography>
+                                    )}
+                                    
+                                    {filteredItems.map((item, index) => (
+                                        <Box
+                                            key={item.id}
+                                            className={`spotlight-item ${index === selectedIndex ? 'selected' : ''}`}
+                                            onClick={() => onSelect(item)}
+                                        >
+                                            <Box className="spotlight-item-icon">
+                                                <Box className="spotlight-icon-placeholder">
+                                                    {getSmartIcon(item)}
+                                                </Box>
+                                            </Box>
+                                            
+                                            <Box className="spotlight-item-content">
+                                                <Typography className="spotlight-item-name">
+                                                    {item.name}
+                                                </Typography>
+                                            </Box>
+
+                                            <Box className="spotlight-item-shortcut">
+                                                {index === selectedIndex && (
+                                                    <Chip 
+                                                        label="⏎"
+                                                        size="small"
+                                                        className="spotlight-enter-hint"
+                                                        sx={{
+                                                            height: 24,
+                                                            fontSize: 12,
+                                                            '& .MuiChip-label': {
+                                                                px: 1
+                                                            }
+                                                        }}
+                                                    />
+                                                )}
+                                            </Box>
+                                        </Box>
+                                    ))}
+                                </Box>
+                            )}
+
+                            {query.trim() && filteredItems.length === 0 && (
+                                <Box className="spotlight-no-results">
+                                    <Box className="spotlight-no-results-icon">
+                                        🔍
+                                    </Box>
+                                    <Typography className="spotlight-no-results-text">
+                                        No results found
+                                    </Typography>
+                                    <Typography className="spotlight-no-results-suggestion">
+                                        Try different keywords or check your spelling
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Paper>
+                    </Box>
+                </Fade>
+            );
+        };
+
+        // Main Demo App
+        const Demo = () => {
+            const [isOpen, setIsOpen] = useState(false);
+            const [selectedItem, setSelectedItem] = useState(null);
+            const [showInitialResults, setShowInitialResults] = useState(false);
+            const [theme, setTheme] = useState('dark');
+
+            const handleSelect = (item) => {
+                setSelectedItem(item);
+                setIsOpen(false);
+                setTimeout(() => setSelectedItem(null), 3000);
+            };
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                        e.preventDefault();
+                        setIsOpen(true);
+                    }
+                };
+
+                document.addEventListener('keydown', handleKeyDown);
+                return () => document.removeEventListener('keydown', handleKeyDown);
+            }, []);
+
+            // Apply theme to body
+            useEffect(() => {
+                document.body.style.background = theme === 'dark' ? '#1a1a1a' : '#f5f5f5';
+                document.body.style.color = theme === 'dark' ? '#ffffff' : '#000000';
+                document.body.style.transition = 'background 0.3s ease, color 0.3s ease';
+            }, [theme]);
+
+            return (
+                <div className="demo-container">
+                    <h1>
+                        React Spotlight Search Demo
+                    </h1>
+                    <p>
+                        A Spotlight-like search component for React
+                    </p>
+                    
+                    <button 
+                        className="demo-button"
+                        onClick={() => setIsOpen(true)}
+                        style={{
+                            background: '#0A84FF',
+                            color: 'white',
+                            border: 'none',
+                            padding: '12px 24px',
+                            borderRadius: '8px',
+                            fontSize: '16px',
+                            cursor: 'pointer',
+                            margin: '20px',
+                            transition: 'background 0.2s ease'
+                        }}
+                    >
+                        Open Spotlight (⌘K)
+                    </button>
+
+                    <div style={{ 
+                        marginBottom: '20px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '12px'
+                    }}>
+                        <label style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '8px'
+                        }}>
+                            <input
+                                type="checkbox"
+                                checked={showInitialResults}
+                                onChange={(e) => setShowInitialResults(e.target.checked)}
+                                style={{ accentColor: '#0A84FF' }}
+                            />
+                            <span>Show results before typing (showInitialResults)</span>
+                        </label>
+                        
+                        <label style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '8px'
+                        }}>
+                            <span style={{ marginRight: '8px' }}>Theme:</span>
+                            <select 
+                                value={theme} 
+                                onChange={(e) => setTheme(e.target.value)}
+                                style={{
+                                    background: theme === 'dark' ? '#2c2c2e' : '#ffffff',
+                                    color: theme === 'dark' ? '#ffffff' : '#000000',
+                                    border: `1px solid ${theme === 'dark' ? '#48484a' : '#d1d1d6'}`,
+                                    borderRadius: '6px',
+                                    padding: '4px 8px',
+                                    fontSize: '14px'
+                                }}
+                            >
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                                <option value="auto">Auto</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div style={{ 
+                        marginTop: '20px', 
+                        fontSize: '14px',
+                        lineHeight: '1.6'
+                    }}>
+                        <p>
+                            <strong>Spotlight Experience!</strong>
+                        </p>
+                        <p>Try searching for: dashboard, settings, analytics, team, projects, messages, calendar, files</p>
+                        <p>Features: Real-time autocomplete (Tab/→ to accept), compact design, smart search</p>
+                        <p><strong>Custom Handlers:</strong> Dashboard, Settings, Team, Messages, Calendar have custom onClick functions</p>
+                        <p><strong>Global Handler:</strong> Analytics, Projects, File Manager use the global onSelect handler</p>
+                        <p>Toggle the controls above to customize behavior and theme</p>
+                    </div>
+
+                    {selectedItem && (
+                        <div style={{
+                            marginTop: '20px',
+                            padding: '16px',
+                            background: theme === 'dark' 
+                                ? 'rgba(10, 132, 255, 0.15)' 
+                                : 'rgba(10, 132, 255, 0.1)',
+                            border: `1px solid ${theme === 'dark' 
+                                ? 'rgba(10, 132, 255, 0.3)' 
+                                : 'rgba(10, 132, 255, 0.2)'}`,
+                            borderRadius: '8px',
+                            color: theme === 'dark' ? '#64B5F6' : '#0066CC'
+                        }}>
+                            <strong>Selected:</strong> {selectedItem.name} → {selectedItem.url}
+                        </div>
+                    )}
+
+                    <SpotlightDemo
+                        items={sampleItems}
+                        isOpen={isOpen}
+                        onClose={() => setIsOpen(false)}
+                        onSelect={handleSelect}
+                        showInitialResults={showInitialResults}
+                        theme={theme}
+                    />
+                </div>
+            );
+        };
+
+        ReactDOM.render(<Demo />, document.getElementById('root'));
+    </script>
+</body>
+</html>
