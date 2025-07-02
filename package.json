@@ -1,5 +1,5 @@
 {
-  "name": "react-spotlight-search",
+  "name": "@sehaj23/react-spotlight-search",
   "version": "1.0.0",
   "description": "A React component that provides Spotlight-like search functionality for modules and links",
   "type": "module",
@@ -21,16 +21,16 @@
     "autocomplete",
     "react"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "Sehaj Chawla",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/spotlight-search.git"
+    "url": "https://github.com/sehaj23/spotlight-react.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/spotlight-search/issues"
+    "url": "https://github.com/sehaj23/spotlight-react/issues"
   },
-  "homepage": "https://github.com/yourusername/spotlight-search#readme",
+  "homepage": "https://github.com/sehaj23/spotlight-react#readme",
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0",
