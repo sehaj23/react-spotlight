@@ -6,7 +6,9 @@
 
 A beautiful, fast, and customizable Spotlight-like search component for React applications.
 
-![Spotlight Search Demo](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Spotlight+Search+Demo)
+## 🎬 Demo
+
+![Spotlight Search Demo](./demo.gif)
 
 ## ✨ Features
 
