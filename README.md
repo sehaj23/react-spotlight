@@ -1,6 +1,6 @@
 # 🔍 Spotlight Search
 
-[![npm version](https://badge.fury.io/js/react-spotlight-search.svg)](https://badge.fury.io/js/react-spotlight-search)
+[![npm version](https://badge.fury.io/js/@sehaj23%2Freact-spotlight-search.svg)](https://badge.fury.io/js/@sehaj23%2Freact-spotlight-search)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
@@ -27,7 +27,7 @@ A beautiful, fast, and customizable Spotlight-like search component for React ap
 ### Installation
 
 ```bash
-npm install spotlight-search
+npm install @sehaj23/react-spotlight-search
 ```
 
 **Peer Dependencies** (install if not already in your project):
@@ -39,7 +39,7 @@ npm install react react-dom @mui/material @mui/icons-material @emotion/react @em
 
 ```tsx
 import React, { useState } from 'react';
-import { Spotlight, SpotlightItem } from 'spotlight-search';
+import { Spotlight, SpotlightItem } from '@sehaj23/react-spotlight-search';
 
 const items: SpotlightItem[] = [
   {
@@ -335,8 +335,8 @@ const adminItems = [
 ### Build from Source
 
 ```bash
-git clone https://github.com/yourusername/spotlight-search.git
-cd spotlight-search
+git clone https://github.com/sehaj23/react-spotlight.git
+cd react-spotlight
 npm install
 npm run build
 ```
@@ -355,7 +355,7 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 ### Development Setup
 
 1. Fork the repository
-2. Clone your fork: `git clone https://github.com/yourusername/spotlight-search.git`
+2. Clone your fork: `git clone https://github.com/yourusername/react-spotlight.git`
 3. Install dependencies: `npm install`
 4. Make your changes
 5. Test your changes: `npm run build`
@@ -363,7 +363,7 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 
 ## 📄 License
 
-MIT © [Your Name](https://github.com/yourusername)
+MIT © [Sehaj Chawla](https://github.com/sehaj23)
 
 ## 🙏 Acknowledgments
 
